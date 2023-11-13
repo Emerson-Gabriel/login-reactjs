@@ -1,46 +1,82 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "../../components/Button";
 import useAuth from "../../hooks/useAuth";
-import * as C from "./styles";
 import Spinner from "../../components/Spinner";
 import { api } from "../../contexts/auth";
+import './style.css';
 
 const Contato = () => {
-  const { signout } = useAuth();
-  const navigate = useNavigate();
-  const [contatos, setContatos] = useState([]);
+    const { signout } = useAuth();
+    const navigate = useNavigate();
+    const [contatos, setContatos] = useState([]);
+    const [prev, setPrev] = useState(null);
+    const [next, setNext] = useState(null);
+    const [page, setPage] = useState(1); /* por hora não fiz a paginação */
 
-  useEffect( () => {
+    const buscaContatos = async () => {
+        api.defaults.headers.common = {
+            'Authorization': 'Bearer ' + localStorage.getItem("token")
+        };
 
-    api.defaults.headers.common = {
-      'Authorization': 'Bearer ' + localStorage.getItem("token")
-    };
+        api.get('/cadastros?page=' + page).then(function (response) {
+            setContatos(response.data.data);
+            if (response.data.links.prev != null) {
+                /* existem links da pagina anterior */
+                setPrev(true);
+            } else {
+                setPrev(null);
+            }
 
-    api.get('/cadastros').then(function (response) {
-      setContatos(response.data.data);
-    });
-  }, []);
+            if (response.data.links.next != null) {
+                /* existem links da pagina proxima */
+                let numPag = response.data.links.next.slice(-1);
+                setPage(numPag);
+                setNext(true);
+            } else {
+                setNext(null);
+            }
+        });
+    }
 
-  return (
-    <C.Container>
-      <C.Title>Página Listagem dos Contatos</C.Title>
-        <ul>
-          {contatos.map((contato) => (
-            <li key={contato.id}>
-              <strong>Nome:</strong> {contato.nome}<br />
-              <strong>Endereço:</strong> {contato.endereco}<br />
-              <strong>Telefone:</strong> {contato.telefone}<br />
-            </li>
-          ))}
-        </ul>
-      <hr/>
-      <Link to={'/home'}>Home</Link>
-      <Button Text="Sair" onClick={() => [signout(), navigate("/")]}>
-        Sair
-      </Button>
-    </C.Container>
-  );
+    useEffect(() => {
+        buscaContatos();
+    }, []);
+
+    return (
+        <div className="container">
+            <h2>Página Listagem dos Contatos</h2>
+            <br />
+            <Link to={'/contato/novo'}>Novo contato</Link>
+            <div>
+                <ul className="ul">
+                    {contatos.map((contato) => (
+                        <li key={contato.id}>
+                            <strong>Nome:</strong> {contato.nome}<br />
+                            <strong>Endereço:</strong> {contato.endereco}<br />
+                            <strong>Telefone:</strong> {contato.telefone}<br />
+                            <hr />
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <div>
+                <div>
+                    <Link className="mr-btn" to="/home">Anterior</Link>
+                    <Link className="ml-btn" to="/home">Próximo</Link>
+                    {/* {prev !== null ? <Link to={`/contatos/${page - 1}`}>Anterior</Link> : null}
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {next !== null ? <Link to={`/contatos/${page + 1}`}>Próximo</Link> : null} */}
+                </div>
+            </div>
+            <br />
+            <button className="btn-primary" onClick={() => [navigate("/home")]}>
+                Home
+            </button>
+            <button className="btn-primary" onClick={() => [signout(), navigate("/")]}>
+                Sair
+            </button>
+        </div>
+    );
 };
 
 export default Contato;
