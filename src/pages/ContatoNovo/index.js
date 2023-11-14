@@ -8,12 +8,13 @@ import Input from "../../components/Input";
 
 const ContatoNovo = () => {
     const navigate = useNavigate();
+    const [cod, setCod] = useState("");
     const [nome, setNome] = useState("");
     const [endereco, setEndereco] = useState("");
     const [telefone, setTelefone] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false); // Estado para controlar o spinner
-    
+
     const handleSalvar = async () => {
         api.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
         api.defaults.headers.common['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';

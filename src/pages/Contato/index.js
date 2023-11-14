@@ -11,14 +11,18 @@ const Contato = () => {
     const [contatos, setContatos] = useState([]);
     const [prev, setPrev] = useState(null);
     const [next, setNext] = useState(null);
+    const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1); /* por hora não fiz a paginação */
 
     const buscaContatos = async () => {
+        setLoading(true);
+
         api.defaults.headers.common = {
             'Authorization': 'Bearer ' + localStorage.getItem("token")
         };
 
         api.get('/cadastros?page=' + page).then(function (response) {
+            setLoading(false);
             setContatos(response.data.data);
             if (response.data.links.prev != null) {
                 /* existem links da pagina anterior */
@@ -30,7 +34,7 @@ const Contato = () => {
             if (response.data.links.next != null) {
                 /* existem links da pagina proxima */
                 let numPag = response.data.links.next.slice(-1);
-                setPage(numPag);
+                /* setPage(numPag); */
                 setNext(true);
             } else {
                 setNext(null);
@@ -38,9 +42,25 @@ const Contato = () => {
         });
     }
 
+    const excluirContato = async (id) => {
+        setLoading(true);
+        api.defaults.headers.common = {
+            'Authorization': 'Bearer ' + localStorage.getItem("token")
+        };
+
+        api.delete('/cadastros/' + id).then(function (response) {
+            if (response.status == 204) {
+                /* atualizamos a consulta */
+                buscaContatos();
+            } else {
+                alert('Não foi possível excluir o registro informado.');
+            }
+        });
+    }
+
     useEffect(() => {
         buscaContatos();
-    }, []);
+    }, [page]);
 
     return (
         <div className="container">
@@ -48,24 +68,36 @@ const Contato = () => {
             <br />
             <Link to={'/contato/novo'}>Novo contato</Link>
             <div>
-                <ul className="ul">
-                    {contatos.map((contato) => (
-                        <li key={contato.id}>
-                            <strong>Nome:</strong> {contato.nome}<br />
-                            <strong>Endereço:</strong> {contato.endereco}<br />
-                            <strong>Telefone:</strong> {contato.telefone}<br />
-                            <hr />
-                        </li>
-                    ))}
-                </ul>
+                {loading ? ( 
+                    <div className="text-center mt-5 mb-5">
+                        <Spinner />
+                    </div>
+                 ) : (
+                    <ul className="ul">
+                        {contatos.map((contato) => (
+                            <li key={contato.id}>
+                                <strong>Nome:</strong> {contato.nome}<br />
+                                <strong>Endereço:</strong> {contato.endereco}<br />
+                                <strong>Telefone:</strong> {contato.telefone}<br />
+                                <Link to={'/'}>
+                                    <i className="fas fa-pencil-alt iconItem"></i>
+                                </Link>
+                                <a onClick={() => excluirContato(contato.id)}>
+                                    <i className="fas fa-trash-alt iconItem"></i>
+                                </a>
+                                <hr />
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
             <div>
                 <div>
-                    <Link className="mr-btn" to="/home">Anterior</Link>
-                    <Link className="ml-btn" to="/home">Próximo</Link>
-                    {/* {prev !== null ? <Link to={`/contatos/${page - 1}`}>Anterior</Link> : null}
+                    {/* <Link className="mr-btn" to="/home">Anterior</Link>
+                    <Link className="ml-btn" to="/home">Próximo</Link> */}
+                    {prev !== null ? <a className="linkPag" onClick={() => [setPage(page - 1)]}>Anterior</a> : null}
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    {next !== null ? <Link to={`/contatos/${page + 1}`}>Próximo</Link> : null} */}
+                    {next !== null ? <a className="linkPag" onClick={() => [setPage(page + 1)]}>Próximo</a> : null}
                 </div>
             </div>
             <br />

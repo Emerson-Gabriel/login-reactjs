@@ -71,3 +71,36 @@ h3 {
 .mr-btn{
     margin-right: 30px;
 }
+
+.text-center{
+    text-align: center;
+}
+
+.mt-2{
+    margin-top: 20px;
+}
+
+.mt-5{
+    margin-top: 50px;
+}
+
+.mb-5{
+    margin-bottom: 50px;
+}
+
+.linkPag{
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.iconItem{
+    margin: 5px;
+    color: #000;
+    cursor: pointer;
+}
+
+.iconItem:hover{
+    color: #676767;
+    transition: 0.2s;
+}
