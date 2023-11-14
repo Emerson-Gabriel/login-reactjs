@@ -5,7 +5,7 @@ export const AuthContext = createContext({});
 
 export const api = axios.create({
     baseURL: process.env.REACT_APP_API,
-    headers: { 'Content-Type': 'application/json' }
+    headers: {'Content-Type': 'application/json'}
 });
 
 export const AuthProvider = ({ children }) => {
