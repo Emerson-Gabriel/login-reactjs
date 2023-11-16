@@ -43,6 +43,10 @@ const Contato = () => {
     }
 
     const excluirContato = async (id) => {
+        if (!window.confirm('Deseja realmente apagar este registro?')){
+            return;
+        }
+
         setLoading(true);
         api.defaults.headers.common = {
             'Authorization': 'Bearer ' + localStorage.getItem("token")
@@ -93,8 +97,6 @@ const Contato = () => {
             </div>
             <div>
                 <div>
-                    {/* <Link className="mr-btn" to="/home">Anterior</Link>
-                    <Link className="ml-btn" to="/home">Próximo</Link> */}
                     {prev !== null ? <a className="linkPag" onClick={() => [setPage(page - 1)]}>Anterior</a> : null}
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     {next !== null ? <a className="linkPag" onClick={() => [setPage(page + 1)]}>Próximo</a> : null}

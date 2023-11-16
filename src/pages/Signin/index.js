@@ -41,8 +41,11 @@ const Signin = () => {
 
     return (
         <div className="container">
-            <h3>SISTEMA DE LOGIN</h3>
+            <h3>SISTEMA DE ESTUDO REACT</h3>
             <div className="content">
+                <div>
+                    <img src="../../../img/logo.png" className="logo-login"/>
+                </div>
                 <Input type="email" placeholder="Digite seu E-mail" value={email} onChange={(e) => [setEmail(e.target.value), setError("")]} />
                 <Input type="password" placeholder="Digite sua Senha" value={senha} onChange={(e) => [setSenha(e.target.value), setError("")]} />
                 <C.labelError>{error}</C.labelError>
